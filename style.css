@@ -1,11 +1,16 @@
 /* --- Переменные и сброс --- */
 :root {
-    --bg-color: #FFF9EB;
-    --accent-color: #9FB2AC;
-    --accent-dark: #7A918C; /* Чуть темнее для hover-эффектов */
-    --text-color: #2C3E3A;  /* Темно-зеленый/серый для хорошей читаемости */
+    --primary: #5F9EA0;
+    --primary-dark: #4A7F81;
+    --primary-light: #EAF4F4;
+    --bg-color: #FFFFFF;
+    --text-color: #1E2A2A;
+    --text-soft: #56696A;
     --white: #FFFFFF;
-    --shadow: 0 4px 12px rgba(44, 62, 58, 0.1);
+    --line: rgba(30, 42, 42, 0.12);
+    --shadow: 0 4px 12px rgba(30, 42, 42, 0.08);
+    --shadow-lg: 0 10px 30px rgba(30, 42, 42, 0.12);
+    --radius: 18px;
 }
 
 * {
@@ -24,89 +29,166 @@ body {
     min-height: 100vh;
 }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
 /* --- Навбар --- */
 .navbar {
     background-color: var(--white);
     padding: 1rem 2rem;
     box-shadow: var(--shadow);
     display: flex;
-    justify-content: center; /* Центрируем логотипы */
+    justify-content: space-between;
     align-items: center;
+    gap: 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .logo-container {
     display: flex;
-    gap: 1.5rem;
     align-items: center;
 }
 
 .nav-logo {
-    height: 50px;
+    height: 48px;
     width: auto;
     object-fit: contain;
+}
+
+.nav-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 320px;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.65rem 2.5rem 0.65rem 1rem;
+    border: 1.5px solid var(--line);
+    border-radius: 50px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    background-color: var(--primary-light);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(95, 158, 160, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    right: 0.9rem;
+    pointer-events: none;
+    font-size: 1rem;
+    opacity: 0.6;
 }
 
 /* --- Hero секция --- */
 .hero {
     position: relative;
-    height: 60vh;
-    min-height: 400px;
-    background-image: url('img/banner.png');
-    background-size: cover;
-    background-position: center;
+    background-color: var(--primary);
+    overflow: hidden;
+    padding-bottom: 3rem;
+}
+
+.hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 55vh;
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 4rem 2rem 2rem;
+}
+
+.hero-text {
     color: var(--white);
+    max-width: 560px;
+    flex: 1 1 400px;
 }
 
-.hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(44, 62, 58, 0.5); /* Затемнение для читаемости текста */
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    padding: 0 1rem;
-    max-width: 800px;
-}
-
-.hero-content h1 {
-    font-size: 2.5rem;
+.hero-text h1 {
+    font-size: 2.6rem;
     font-weight: 900;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    line-height: 1.25;
+    margin-bottom: 1.2rem;
 }
 
-.hero-content p {
-    font-size: 1.2rem;
+.hero-text .highlight {
+    color: var(--text-color);
+    background-color: var(--white);
+    padding: 0 0.4rem;
+    border-radius: 6px;
+}
+
+.hero-text p {
+    font-size: 1.15rem;
+    font-weight: 400;
     margin-bottom: 2rem;
-    font-weight: 500;
+    opacity: 0.95;
 }
 
 .cta-button {
-    background-color: var(--accent-color);
-    color: var(--white);
+    display: inline-block;
+    background-color: var(--white);
+    color: var(--primary-dark);
     border: none;
     padding: 1rem 2.5rem;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
     border-radius: 50px;
     cursor: pointer;
+    text-decoration: none;
     transition: all 0.3s ease;
     font-family: 'Heebo', sans-serif;
 }
 
 .cta-button:hover {
-    background-color: var(--accent-dark);
+    background-color: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(159, 178, 172, 0.4);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero-visual {
+    flex: 1 1 320px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 100%;
+}
+
+.student-img {
+    max-width: 100%;
+    max-height: 420px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
+}
+
+.hero-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: var(--bg-color);
+    border-radius: 100% 100% 0 0 / 100% 100% 0 0;
 }
 
 /* --- Основной контент (Категории) --- */
@@ -122,7 +204,7 @@ body {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: var(--accent-dark);
+    color: var(--primary-dark);
 }
 
 .categories-grid {
@@ -134,16 +216,16 @@ body {
 .category-card {
     background-color: var(--white);
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: var(--radius);
     text-align: center;
     box-shadow: var(--shadow);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-top: 4px solid var(--accent-color);
+    border-top: 4px solid var(--primary);
 }
 
 .category-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(44, 62, 58, 0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 .card-icon {
@@ -158,13 +240,21 @@ body {
 }
 
 .category-card p {
-    color: #666;
+    color: var(--text-soft);
     font-size: 1rem;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 1.1rem;
+    padding: 2rem 1rem;
 }
 
 /* --- Футер --- */
 .footer {
-    background-color: var(--accent-color);
+    background-color: var(--primary);
     color: var(--white);
     padding: 3rem 2rem 1rem;
     margin-top: auto;
@@ -182,7 +272,7 @@ body {
 .footer-section h4 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
-    border-bottom: 2px solid rgba(255,255,255,0.3);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
     display: inline-block;
     padding-bottom: 0.5rem;
 }
@@ -203,9 +293,13 @@ body {
     grid-column: 1 / -1;
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255,255,255,0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
     font-size: 1.1rem;
     font-weight: 700;
+}
+
+.signature p:first-child {
+    margin-bottom: 0.3rem;
 }
 
 .footer-bottom {
@@ -216,23 +310,49 @@ body {
 }
 
 /* --- Адаптивность для мобильных --- */
-@media (max-width: 768px) {
-    .hero-content h1 {
-        font-size: 1.8rem;
+@media (max-width: 900px) {
+    .hero-inner {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 3rem;
     }
-    
-    .hero-content p {
+
+    .hero-text {
+        max-width: 100%;
+    }
+
+    .hero-visual {
+        order: -1;
+    }
+
+    .student-img {
+        max-height: 260px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .nav-search {
+        max-width: 100%;
+    }
+
+    .hero-text h1 {
+        font-size: 1.9rem;
+    }
+
+    .hero-text p {
         font-size: 1rem;
     }
-    
-    .navbar {
-        padding: 1rem;
-    }
-    
+
     .nav-logo {
-        height: 40px;
+        height: 38px;
     }
-    
+
     .places-container {
         padding: 2rem 1rem;
     }
