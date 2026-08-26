@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מציאת מקום התנדבות | KayooshStudio</title>
+    <!-- Подключение современного ивритского шрифта -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 1. Навбар -->
+    <header class="navbar">
+        <div class="logo-container">
+            <img src="icons/beer-sheva.png" alt="לוגו באר שבע" class="nav-logo">
+            <img src="icons/horim.png" alt="לוגו הורים" class="nav-logo">
+        </div>
+    </header>
+
+    <!-- 2. Hero секция с баннером -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>מציאת מקום התנדבות לפי ה-style שלך!</h1>
+            <p>בואו למצוא את המקום המושלם עבורכם לתרום לקהילה</p>
+            <button class="cta-button" onclick="scrollToPlaces()">בואו נתחיל</button>
+        </div>
+    </section>
+
+    <!-- 3. Основной контент: Категории (заглушка для будущей логики) -->
+    <main class="places-container" id="places-section">
+        <h2 class="section-title">קטגוריות התנדבות מומלצות</h2>
+        <div class="categories-grid" id="categories-grid">
+            <!-- Эти карточки позже будут генерироваться из JSON через JS -->
+            <div class="category-card">
+                <div class="card-icon">🐾</div>
+                <h3>בעלי חיים</h3>
+                <p>התנדבות בכלבייה, חתוליה ומרכזי הצלה</p>
+            </div>
+            <div class="category-card">
+                <div class="card-icon">🌳</div>
+                <h3>איכות הסביבה</h3>
+                <p>ניקיון פארקים, שתילת עצים ומיחזור</p>
+            </div>
+            <div class="category-card">
+                <div class="card-icon">👵</div>
+                <h3>קשישים ורווחה</h3>
+                <p>ביקורי בית, סיוע בקניות והפעלות</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 4. Футер -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>צוות הפיתוח</h4>
+                <p>מפתח ראשי: <a href="mailto:kayoosh2009@gmail.com">kayoosh2009@gmail.com</a></p>
+                <p>בעל האתר: <a href="mailto:sharon-zvi@gmail.com">sharon-zvi@gmail.com</a></p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>קוד פתוח</h4>
+                <a href="https://github.com/kayoosh2009/FindingVolunteer" target="_blank" rel="noopener noreferrer" class="github-link">
+                    GitHub Repository 📂
+                </a>
+            </div>
+            
+            <div class="footer-section signature">
+                <p>באהבה מצוות "גן הוורדים הלבנים - KayooshStudio" 🌹</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 כל הזכויות שמורות</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
