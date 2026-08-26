@@ -260,13 +260,22 @@ body {
     margin-top: auto;
 }
 
-.footer-content {
+.footer-top {
     max-width: 1200px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    display: flex;
+    direction: ltr; /* принудительно левый текст / правые логотипы, вне зависимости от RTL страницы */
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: 2rem;
-    text-align: center;
+}
+
+.footer-text {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    text-align: left;
 }
 
 .footer-section h4 {
@@ -289,17 +298,46 @@ body {
     text-decoration: underline;
 }
 
-.signature {
-    grid-column: 1 / -1;
-    margin-top: 2rem;
+.footer-logos {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.footer-logo {
+    height: 44px;
+    width: auto;
+    object-fit: contain;
+    background-color: var(--white);
+    padding: 6px;
+    border-radius: 10px;
+}
+
+.footer-signature {
+    max-width: 1200px;
+    margin: 2rem auto 0;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     font-size: 1.1rem;
     font-weight: 700;
+    text-align: center;
 }
 
-.signature p:first-child {
+.footer-signature p:first-child {
     margin-bottom: 0.3rem;
+}
+
+@media (max-width: 600px) {
+    .footer-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-text {
+        justify-content: center;
+        text-align: center;
+    }
 }
 
 .footer-bottom {
