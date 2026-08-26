@@ -12,44 +12,45 @@
 </head>
 <body>
 
-    <!-- 1. Навбар -->
+    <!-- 1. Навбар: логотип + поиск מקומות לפי שם -->
     <header class="navbar">
         <div class="logo-container">
-            <img src="icons/beer-sheva.png" alt="לוגו באר שבע" class="nav-logo">
-            <img src="icons/horim.png" alt="לוגו הורים" class="nav-logo">
+            <img src="icons/logo.png" alt="לוגו האתר" class="nav-logo">
+        </div>
+
+        <div class="nav-search">
+            <label for="search-input" class="visually-hidden">חיפוש קטגוריה לפי שם</label>
+            <input
+                type="text"
+                id="search-input"
+                class="search-input"
+                placeholder="חיפוש קטגוריה לפי שם..."
+                autocomplete="off"
+            >
+            <span class="search-icon" aria-hidden="true">🔍</span>
         </div>
     </header>
 
-    <!-- 2. Hero секция с баннером -->
+    <!-- 2. Hero секция: цвет + студент + текст + кнопка на тест -->
     <section class="hero">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1>מציאת מקום התנדבות לפי ה-style שלך!</h1>
-            <p>בואו למצוא את המקום המושלם עבורכם לתרום לקהילה</p>
-            <button class="cta-button" onclick="scrollToPlaces()">בואו נתחיל</button>
+        <div class="hero-inner">
+            <div class="hero-text">
+                <h1>מצאו את מקום ההתנדבות שמתאים בול ל-<span class="highlight">style</span> שלכם</h1>
+                <p>ענו על כמה שאלות קצרות ונתאים לכם את מקום ההתנדבות המושלם - בלי לבזבז זמן על חיפושים</p>
+                <a href="survey.html" class="cta-button">בואו נעשה את המבחן 🎯</a>
+            </div>
+            <div class="hero-visual">
+                <img src="img/student.png" alt="תלמיד מתנדב" class="student-img">
+            </div>
         </div>
+        <div class="hero-wave" aria-hidden="true"></div>
     </section>
 
-    <!-- 3. Основной контент: Категории (заглушка для будущей логики) -->
+    <!-- 3. Основной контент: Категории, генерируются автоматически из data/local.json -->
     <main class="places-container" id="places-section">
         <h2 class="section-title">קטגוריות התנדבות מומלצות</h2>
         <div class="categories-grid" id="categories-grid">
-            <!-- Эти карточки позже будут генерироваться из JSON через JS -->
-            <div class="category-card">
-                <div class="card-icon">🐾</div>
-                <h3>בעלי חיים</h3>
-                <p>התנדבות בכלבייה, חתוליה ומרכזי הצלה</p>
-            </div>
-            <div class="category-card">
-                <div class="card-icon">🌳</div>
-                <h3>איכות הסביבה</h3>
-                <p>ניקיון פארקים, שתילת עצים ומיחזור</p>
-            </div>
-            <div class="category-card">
-                <div class="card-icon">👵</div>
-                <h3>קשישים ורווחה</h3>
-                <p>ביקורי בית, סיוע בקניות והפעלות</p>
-            </div>
+            <!-- הכרטיסים ייווצרו כאן אוטומטית ע"י script.js מתוך data/local.json -->
         </div>
     </main>
 
@@ -57,24 +58,25 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h4>צוות הפיתוח</h4>
-                <p>מפתח ראשי: <a href="mailto:kayoosh2009@gmail.com">kayoosh2009@gmail.com</a></p>
-                <p>בעל האתר: <a href="mailto:sharon-zvi@gmail.com">sharon-zvi@gmail.com</a></p>
+                <h4>Development Team</h4>
+                <p>Lead Developer: Kai Klimenko - <a href="mailto:kayoosh2009@gmail.com">kayoosh2009@gmail.com</a></p>
+                <p>Site Owner: Sharon Zvi - <a href="mailto:sharon-zvi@gmail.com">sharon-zvi@gmail.com</a></p>
             </div>
-            
+
             <div class="footer-section">
-                <h4>קוד פתוח</h4>
+                <h4>Open Source</h4>
                 <a href="https://github.com/kayoosh2009/FindingVolunteer" target="_blank" rel="noopener noreferrer" class="github-link">
                     GitHub Repository 📂
                 </a>
             </div>
-            
+
             <div class="footer-section signature">
-                <p>באהבה מצוות "גן הוורדים הלבנים - KayooshStudio" 🌹</p>
+                <p>Made with love &lt;3</p>
+                <p>Nekotexs Studio</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 כל הזכויות שמורות</p>
+            <p>© 2026 All rights reserved</p>
         </div>
     </footer>
 
