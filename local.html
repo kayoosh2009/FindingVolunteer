@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרטי מקום התנדבות | KayooshStudio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="icons/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .detail-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            transition: opacity 0.2s;
+        }
+        .back-btn:hover { opacity: 0.7; }
+        .detail-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            border-top: 5px solid var(--primary);
+        }
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .detail-icon {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            background: var(--primary-light);
+            padding: 10px;
+            border-radius: 14px;
+        }
+        .detail-title h1 {
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 0.3rem;
+        }
+        .detail-section {
+            margin-top: 1.8rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--line);
+        }
+        .detail-section h3 {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.6rem;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .info-box {
+            background: var(--primary-light);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+        .info-box span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-soft);
+            font-weight: 500;
+        }
+        .info-box strong {
+            font-size: 1.05rem;
+            color: var(--text-color);
+        }
+        #detail-map {
+            height: 300px;
+            border-radius: 12px;
+            margin-top: 0.8rem;
+            border: 1.5px solid var(--line);
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-top: 0.8rem;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html">
+                <img src="icons/logo.png" alt="לוגו האתר" class="nav-logo">
+            </a>
+        </div>
+    </header>
+
+    <main class="detail-container">
+        <a href="index.html" class="back-btn">➡️ חזרה לרשימת המקומות</a>
+        
+        <div id="loading" class="empty-state">טוען פרטים...</div>
+
+        <div id="detail-card" class="detail-card" style="display: none;">
+            <div class="detail-header">
+                <div id="icon-holder"></div>
+                <div class="detail-title">
+                    <h1 id="p-name"></h1>
+                    <div class="card-meta" id="p-meta"></div>
+                </div>
+            </div>
+
+            <p id="p-description" class="card-description" style="font-size: 1.1rem;"></p>
+
+            <div class="detail-grid">
+                <div class="info-box" id="box-grades">
+                    <span>טווח כיתות</span>
+                    <strong id="p-grades"></strong>
+                </div>
+                <div class="info-box" id="box-cost">
+                    <span>עלות</span>
+                    <strong id="p-cost"></strong>
+                </div>
+                <div class="info-box" id="box-availability">
+                    <span>מתי אפשר להצטרף</span>
+                    <strong id="p-availability"></strong>
+                </div>
+            </div>
+
+            <div class="detail-section" id="sec-requirements">
+                <h3>📋 מה נדרש כדי להצטרף</h3>
+                <p id="p-requirements"></p>
+            </div>
+
+            <div class="detail-section" id="sec-location">
+                <h3>📍 מיקום</h3>
+                <p id="p-location"></p>
+                <div id="detail-map" style="display:none;"></div>
+            </div>
+
+            <div class="detail-section" id="sec-contact">
+                <h3>📞 פרטי התקשרות</h3>
+                <p id="p-contact" style="white-space: pre-line;"></p>
+            </div>
+
+            <div class="detail-section" id="sec-media" style="display:none;">
+                <h3>🎬 וידאו / מדיה</h3>
+                <div class="video-container" id="video-wrapper"></div>
+            </div>
+
+            <div class="detail-section" id="sec-link" style="display:none; text-align: center;">
+                <a id="p-link" href="#" target="_blank" class="cta-button" style="background-color: var(--primary); color: white;">🔗 מעבר לאתר הרשמי</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const placeId = params.get('id');
+
+            if (!placeId) {
+                document.getElementById('loading').textContent = 'שגיאה: לא נבחר מקום';
+                return;
+            }
+
+            try {
+                const res = await fetch('local.json');
+                const places = await res.json();
+                const place = places.find(p => String(p.id) === String(placeId));
+
+                if (!place) {
+                    document.getElementById('loading').textContent = 'המקום המבוקש לא נמצא';
+                    return;
+                }
+
+                renderDetails(place);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading').textContent = 'שגיאה בטעינת הנתונים';
+            }
+        });
+
+        function renderDetails(p) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('detail-card').style.display = 'block';
+            document.title = `${p.name} | KayooshStudio`;
+
+            // Иконка
+            const iconHolder = document.getElementById('icon-holder');
+            if (p.icon) {
+                iconHolder.innerHTML = `<img src="${p.icon}" alt="${p.name}" class="detail-icon" onerror="this.outerHTML='<span style=\'font-size:3rem;\'>📍</span>'">`;
+            } else {
+                iconHolder.innerHTML = '<span style="font-size:3rem;">📍</span>';
+            }
+
+            document.getElementById('p-name').textContent = p.name || '';
+            document.getElementById('p-description').textContent = p.description || '';
+
+            // Теги
+            const meta = document.getElementById('p-meta');
+            meta.innerHTML = '';
+            if (p.category) meta.innerHTML += `<span class="category-tag">🏷️ ${p.category}</span> `;
+
+            // Грид информации
+            document.getElementById('p-grades').textContent = (p.gradeFrom || p.gradeTo) ? `${p.gradeFrom || ''} - ${p.gradeTo || ''}` : 'לא צוין';
+            document.getElementById('p-cost').textContent = p.cost || 'חינם / לא צוין';
+            document.getElementById('p-availability').textContent = p.availability || 'לא צוין';
+
+            // Требования
+            if (p.requirements) {
+                document.getElementById('p-requirements').textContent = p.requirements;
+            } else {
+                document.getElementById('sec-requirements').style.display = 'none';
+            }
+
+            // Локация и карта
+            if (p.location || p.coordinates) {
+                document.getElementById('p-location').textContent = p.location || '';
+                if (p.coordinates) {
+                    const coords = p.coordinates.split(',').map(c => parseFloat(c.trim()));
+                    if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                        const mapEl = document.getElementById('detail-map');
+                        mapEl.style.display = 'block';
+                        const map = L.map('detail-map').setView([coords[0], coords[1]], 14);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; OpenStreetMap contributors'
+                        }).addTo(map);
+                        L.marker([coords[0], coords[1]]).addTo(map).bindPopup(p.name).openPopup();
+                    }
+                }
+            } else {
+                document.getElementById('sec-location').style.display = 'none';
+            }
+
+            // Контакты
+            if (p.contact) {
+                document.getElementById('p-contact').textContent = p.contact;
+            } else {
+                document.getElementById('sec-contact').style.display = 'none';
+            }
+
+            // Видео (YouTube embed)
+            if (p.media) {
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = p.media.match(regExp);
+                if (match && match[2].length === 11) {
+                    document.getElementById('sec-media').style.display = 'block';
+                    document.getElementById('video-wrapper').innerHTML = `
+                        <iframe src="https://www.youtube.com/embed/${match[2]}" allowfullscreen></iframe>
+                    `;
+                }
+            }
+
+            // Внешняя ссылка
+            if (p.externalLink) {
+                document.getElementById('sec-link').style.display = 'block';
+                document.getElementById('p-link').href = p.externalLink;
+            }
+        }
+    </script>
+</body>
+</html>
