@@ -20,49 +20,52 @@ function scrollToPlaces() {
 }
 
 /**
- * טוען את רשימת הקטגוריות מתוך data/local.json ומרנדר אותן
+ * טוען את רשימת המקומות מתוך data/places.json ומרנדר אותן
  */
 async function loadCategories() {
     const grid = document.getElementById('categories-grid');
     if (!grid) return;
 
     try {
-        const response = await fetch('data/local.json');
+        const response = await fetch('data/places.json');
         if (!response.ok) {
             throw new Error(`שגיאת HTTP: ${response.status}`);
         }
-        const categories = await response.json();
-        renderCategories(categories);
+        const places = await response.json();
+        renderCategories(places);
     } catch (error) {
-        console.error('שגיאה בטעינת הקטגוריות:', error);
-        grid.innerHTML = '<p class="empty-state">לא ניתן לטעון את הקטגוריות כרגע. נסו לרענן את העמוד.</p>';
+        console.error('שגיאה בטעינת המקומות:', error);
+        grid.innerHTML = '<p class="empty-state">לא ניתן לטעון את המקומות כרגע. נסו לרענן את העמוד.</p>';
     }
 }
 
 /**
- * מרנדר כרטיסי קטגוריה לתוך ה-grid
- * @param {Array} categories - מערך אובייקטים בפורמט { id, name, description, icon }
+ * מרנדר כרטיסי מקומות לתוך ה-grid
+ * @param {Array} places - מערך אובייקטים בפורמט { id, name, description, category, icon, ... }
  */
-function renderCategories(categories) {
+function renderCategories(places) {
     const grid = document.getElementById('categories-grid');
     if (!grid) return;
 
     grid.innerHTML = '';
 
-    if (!categories || categories.length === 0) {
-        grid.innerHTML = '<p class="empty-state">בקרוב יתווספו כאן קטגוריות חדשות 🌱</p>';
+    if (!places || places.length === 0) {
+        grid.innerHTML = '<p class="empty-state">בקרוב יתווספו כאן מקומות חדשים 🌱</p>';
         return;
     }
 
-    categories.forEach(category => {
+    places.forEach(place => {
         const card = document.createElement('div');
         card.className = 'category-card';
-        card.dataset.name = category.name || '';
+        card.dataset.name = place.name || '';
+        card.dataset.category = place.category || '';
 
         card.innerHTML = `
-            <div class="card-icon">${category.icon || '📍'}</div>
-            <h3>${category.name || ''}</h3>
-            <p>${category.description || ''}</p>
+            <div class="card-icon">${place.icon || '📍'}</div>
+            <h3>${place.name || ''}</h3>
+            <p>${place.description || ''}</p>
+            ${place.category ? `<span class="category-tag">${place.category}</span>` : ''}
+            ${place.location ? `<div class="location-info">📍 ${place.location}</div>` : ''}
         `;
 
         grid.appendChild(card);
@@ -70,7 +73,7 @@ function renderCategories(categories) {
 }
 
 /**
- * מפעיל את שדה החיפוש בנאבבר - מסנן את כרטיסי הקטגוריות לפי שם
+ * מפעיל את שדה החיפוש בנאבבר - מסנן את כרטיסי המקומות לפי שם
  */
 function setupSearch() {
     const input = document.getElementById('search-input');
@@ -107,7 +110,7 @@ function toggleNoResultsMessage(show) {
             message = document.createElement('p');
             message.id = 'no-results-message';
             message.className = 'empty-state';
-            message.textContent = 'לא נמצאו קטגוריות התואמות את החיפוש שלכם';
+            message.textContent = 'לא נמצאו מקומות התואמים את החיפוש שלכם';
             grid.appendChild(message);
         }
     } else if (message) {
