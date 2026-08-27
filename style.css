@@ -395,3 +395,21 @@ body {
         padding: 2rem 1rem;
     }
 }
+
+/* --- Дополнительные стили для карточек мест --- */
+.category-tag {
+    display: inline-block;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.location-info {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    margin-top: 0.3rem;
+}
