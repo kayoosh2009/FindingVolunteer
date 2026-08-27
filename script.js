@@ -40,14 +40,14 @@ function renderCategories(places) {
 
         // Переход на страницу деталей local.html при клике на карточку
         card.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'A') {
+            if (e.target.tagName !== 'A' && !e.target.closest('a')) {
                 window.location.href = `local.html?id=${encodeURIComponent(place.id)}`;
             }
         });
 
         const iconHtml = place.icon 
-            ? `<img src="${place.icon}" alt="${place.name}" class="card-icon-img" onerror="this.style.display='none'; this.parentElement.innerHTML='📍'">`
-            : '📍';
+            ? `<img src="${place.icon}" alt="${place.name}" class="card-icon-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<img src=\'icons/place.png\' class=\'card-icon-img\'>';">`
+            : '<img src="icons/place.png" alt="מיקום" class="card-icon-img">';
 
         card.innerHTML = `
             <div class="card-icon-wrapper">
@@ -58,15 +58,34 @@ function renderCategories(places) {
                 <p class="card-description">${place.description || ''}</p>
                 
                 <div class="card-meta">
-                    ${place.category ? `<span class="category-tag">🏷️ ${place.category}</span>` : ''}
-                    ${place.gradeFrom || place.gradeTo ? `<span class="grade-tag">📚 ${place.gradeFrom || ''}${place.gradeFrom && place.gradeTo ? '–' : ''}${place.gradeTo || ''}</span>` : ''}
+                    ${place.category ? `
+                        <span class="category-tag">
+                            <img src="icons/description.png" alt="" class="tag-icon" onerror="this.style.display='none'">
+                            ${place.category}
+                        </span>` : ''}
+                    ${(place.gradeFrom || place.gradeTo) ? `
+                        <span class="grade-tag">
+                            <img src="icons/description.png" alt="" class="tag-icon" onerror="this.style.display='none'">
+                            ${place.gradeFrom || ''}${(place.gradeFrom && place.gradeTo) ? '–' : ''}${place.gradeTo || ''}
+                        </span>` : ''}
                 </div>
 
-                ${place.location ? `<div class="location-info">📍 ${place.location}</div>` : ''}
+                ${place.location ? `
+                    <div class="location-info">
+                        <img src="icons/place.png" alt="" class="meta-icon" onerror="this.style.display='none'">
+                        <span>${place.location}</span>
+                    </div>` : ''}
                 
                 <div class="card-footer">
-                    ${place.cost ? `<span class="cost-info">💰 ${place.cost}</span>` : ''}
-                    <a href="local.html?id=${encodeURIComponent(place.id)}" class="card-link">לפרטים מלאים ⬅️</a>
+                    ${place.cost ? `
+                        <span class="cost-info">
+                            <img src="icons/money.png" alt="" class="meta-icon" onerror="this.style.display='none'">
+                            <span>${place.cost}</span>
+                        </span>` : ''}
+                    <a href="local.html?id=${encodeURIComponent(place.id)}" class="card-link">
+                        <span>לפרטים מלאים</span>
+                        <img src="icons/back.png" alt="" class="card-link-icon" onerror="this.style.display='none'">
+                    </a>
                 </div>
             </div>
         `;
