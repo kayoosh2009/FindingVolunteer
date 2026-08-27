@@ -196,8 +196,18 @@
                 <input type="text" id="f-gradeTo" placeholder="עד כיתה (למשל יב')">
             </div>
 
-            <label for="f-icon">אייקון (אימוג'י)</label>
-            <input type="text" id="f-icon" placeholder="🐾" maxlength="4">
+            <label for="f-icon">אייקון (נתיב לתמונה, למשל icons/dog.png)</label>
+            <div style="display:flex; gap:0.6rem; align-items:center;">
+                <input type="text" id="f-icon" placeholder="icons/dog.png" style="flex:1;">
+                <label class="btn btn-secondary" style="margin:0; padding:0.5rem 0.9rem; white-space:nowrap; cursor:pointer;">
+                    📁 בחירה
+                    <input type="file" id="f-icon-file" accept="image/*" style="display:none;">
+                </label>
+            </div>
+            <div id="icon-preview-wrap" style="margin-top:0.6rem; display:none;">
+                <img id="icon-preview" src="" alt="תצוגה מקדימה" style="height:48px; width:48px; object-fit:contain; border:1.5px solid var(--line); border-radius:8px; background:var(--white); padding:4px;">
+            </div>
+            <p class="hint">בחירת קובץ כאן היא רק לתצוגה מקדימה ולמילוי אוטומטי של הנתיב. חובה להעתיק בעצמכם את קובץ התמונה לתיקיית <code>icons/</code> באתר - ה-JSON שומר רק את הנתיב, לא את התמונה עצמה.</p>
 
             <label for="f-location">מיקום (כתובת / אזור)</label>
             <input type="text" id="f-location" placeholder="לדוגמה: באר שבע, רחוב הרצל 5">
@@ -452,6 +462,15 @@
         reader.readAsText(file);
     });
 
+        document.getElementById('f-icon-file').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        document.getElementById('icon-preview').src = url;
+        document.getElementById('icon-preview-wrap').style.display = 'block';
+        document.getElementById('f-icon').value = 'icons/' + file.name;
+    });
+    
     renderList();
 </script>
 
