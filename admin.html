@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>עורך נתונים - בניית קובץ JSON</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    :root {
+        --primary: #5F9EA0;
+        --primary-dark: #4A7F81;
+        --primary-light: #EAF4F4;
+        --text: #1E2A2A;
+        --text-soft: #56696A;
+        --line: rgba(30,42,42,0.15);
+        --white: #FFFFFF;
+        --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #F4F8F8;
+        color: var(--text);
+        margin: 0;
+        padding: 2rem;
+    }
+    h1 {
+        color: var(--primary-dark);
+        margin-bottom: 0.3rem;
+    }
+    .subtitle {
+        color: var(--text-soft);
+        margin-bottom: 2rem;
+    }
+    .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+    @media (max-width: 950px) {
+        .layout { grid-template-columns: 1fr; }
+    }
+    .card {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        box-shadow: 0 4px 14px rgba(30,42,42,0.08);
+        margin-bottom: 1.5rem;
+    }
+    .card h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: var(--primary-dark);
+        border-bottom: 2px solid var(--primary-light);
+        padding-bottom: 0.5rem;
+    }
+    label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+        margin-top: 1rem;
+    }
+    label:first-of-type { margin-top: 0; }
+    input[type="text"], input[type="number"], textarea, select {
+        width: 100%;
+        padding: 0.6rem 0.7rem;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        color: var(--text);
+        background: var(--primary-light);
+    }
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .hint {
+        font-size: 0.8rem;
+        color: var(--text-soft);
+        margin-top: 0.3rem;
+    }
+    #map {
+        height: 260px;
+        border-radius: 8px;
+        margin-top: 0.6rem;
+        border: 1.5px solid var(--line);
+    }
+    .btn {
+        display: inline-block;
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 1.6rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--primary); color: var(--white); }
+    .btn-secondary { background: var(--white); color: var(--primary-dark); border: 1.5px solid var(--primary); }
+    .btn-danger { background: #E07A5F; color: var(--white); }
+    .btn-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .entry-list { display: flex; flex-direction: column; gap: 0.7rem; max-height: 320px; overflow-y: auto; }
+    .entry-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--primary-light);
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        gap: 0.5rem;
+    }
+    .entry-item .info { font-size: 0.9rem; }
+    .entry-item .info b { display: block; color: var(--primary-dark); }
+    .entry-item .actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+    .entry-item .actions button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 1.05rem;
+    }
+    textarea#jsonPreview {
+        width: 100%;
+        min-height: 260px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        direction: ltr;
+        text-align: left;
+        background: #1E2A2A;
+        color: #B8E3D8;
+        border: none;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    .filename-row {
+        display: flex;
+        gap: 0.8rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .filename-row input { flex: 1; }
+    .empty-note { color: var(--text-soft); font-size: 0.9rem; text-align: center; padding: 1rem; }
+    .top-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+
+    <h1>🛠️ עורך נתונים - בניית קובץ JSON</h1>
+    <p class="subtitle">כלי זמני לבנייה ידנית של רשימת מקומות ההתנדבות. לא חלק מהאתר עצמו - רק בשבילך.</p>
+
+    <div class="top-actions">
+        <label class="btn btn-secondary" style="margin:0; cursor:pointer;">
+            📂 טעינת קובץ JSON קיים
+            <input type="file" id="loadFile" accept="application/json" style="display:none;">
+        </label>
+    </div>
+
+    <div class="layout">
+
+        <!-- טופס הזנה -->
+        <div class="card">
+            <h2>הוספת מקום חדש</h2>
+
+            <label for="f-id">ID (מזהה ייחודי)</label>
+            <input type="text" id="f-id">
+            <p class="hint">נוצר אוטומטית, אפשר לשנות. חייב להיות ייחודי לכל מקום.</p>
+
+            <label for="f-name">שם המקום</label>
+            <input type="text" id="f-name" placeholder="לדוגמה: כלבית העירונית">
+
+            <label for="f-description">תיאור</label>
+            <textarea id="f-description" placeholder="כמה משפטים על המקום ומה עושים בו"></textarea>
+
+            <label for="f-category">קטגוריה</label>
+            <input type="text" id="f-category" list="category-options" placeholder="לדוגמה: בעלי חיים">
+            <datalist id="category-options">
+                <option value="בעלי חיים">
+                <option value="איכות הסביבה">
+                <option value="קשישים ורווחה">
+            </datalist>
+            <p class="hint">מומלץ להשתמש באותו שם קטגוריה כמו ב-data/local.json כדי שהסינון יעבוד.</p>
+
+            <label>טווח כיתות</label>
+            <div class="row2">
+                <input type="text" id="f-gradeFrom" placeholder="מכיתה (למשל ז')">
+                <input type="text" id="f-gradeTo" placeholder="עד כיתה (למשל יב')">
+            </div>
+
+            <label for="f-icon">אייקון (אימוג'י)</label>
+            <input type="text" id="f-icon" placeholder="🐾" maxlength="4">
+
+            <label for="f-location">מיקום (כתובת / אזור)</label>
+            <input type="text" id="f-location" placeholder="לדוגמה: באר שבע, רחוב הרצל 5">
+
+            <label>קואורדינטות - לחצו על המפה כדי לבחור נקודה</label>
+            <div id="map"></div>
+            <div class="row2" style="margin-top:0.6rem;">
+                <input type="number" id="f-lat" step="0.000001" placeholder="Latitude">
+                <input type="number" id="f-lng" step="0.000001" placeholder="Longitude">
+            </div>
+
+            <label for="f-requirements">מה נדרש כדי להצטרף</label>
+            <textarea id="f-requirements" placeholder="לדוגמה: גיל מינימום, אישור הורים, ראיון קצר"></textarea>
+
+            <label for="f-availability">מתי אפשר להצטרף</label>
+            <input type="text" id="f-availability" placeholder="לדוגמה: כל השנה / רק בתחילת שנת הלימודים">
+
+            <label for="f-cost">עלות</label>
+            <input type="text" id="f-cost" placeholder="לדוגמה: בחינם">
+
+            <label for="f-contact">פרטי התקשרות</label>
+            <textarea id="f-contact" placeholder="טלפון, מייל, איש קשר"></textarea>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="addEntry()">➕ הוספה לרשימה</button>
+                <button class="btn btn-secondary" onclick="clearForm()">🧹 ניקוי הטופס</button>
+            </div>
+        </div>
+
+        <!-- רשימה ותצוגה מקדימה -->
+        <div>
+            <div class="card">
+                <h2>מקומות שנוספו (<span id="countLabel">0</span>)</h2>
+                <div class="entry-list" id="entryList">
+                    <p class="empty-note">עדיין לא נוספו מקומות</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>תצוגה מקדימה + ייצוא</h2>
+                <div class="filename-row">
+                    <label style="margin:0; white-space:nowrap;">שם הקובץ:</label>
+                    <input type="text" id="filename" value="places.json">
+                </div>
+                <textarea id="jsonPreview" readonly>[]</textarea>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="downloadJSON()">⬇️ הורדת קובץ JSON</button>
+                    <button class="btn btn-secondary" onclick="copyJSON()">📋 העתקה ללוח</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    let places = [];
+    let editIndex = null;
+    let counter = 1;
+
+    // --- מפה ---
+    const map = L.map('map').setView([31.2518, 34.7913], 8); // מרכז ברירת מחדל: באר שבע
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    let marker = null;
+
+    function setMarker(lat, lng) {
+        if (marker) { map.removeLayer(marker); }
+        marker = L.marker([lat, lng]).addTo(map);
+        document.getElementById('f-lat').value = lat.toFixed(6);
+        document.getElementById('f-lng').value = lng.toFixed(6);
+    }
+
+    map.on('click', (e) => {
+        setMarker(e.latlng.lat, e.latlng.lng);
+    });
+
+    // עדכון ידני של lat/lng גם יזיז את הסמן
+    document.getElementById('f-lat').addEventListener('change', syncMarkerFromInputs);
+    document.getElementById('f-lng').addEventListener('change', syncMarkerFromInputs);
+
+    function syncMarkerFromInputs() {
+        const lat = parseFloat(document.getElementById('f-lat').value);
+        const lng = parseFloat(document.getElementById('f-lng').value);
+        if (!isNaN(lat) && !isNaN(lng)) {
+            setMarker(lat, lng);
+            map.setView([lat, lng], map.getZoom());
+        }
+    }
+
+    // --- טופס ---
+    function nextId() {
+        return 'place-' + counter;
+    }
+    document.getElementById('f-id').value = nextId();
+
+    function readForm() {
+        return {
+            id: document.getElementById('f-id').value.trim(),
+            name: document.getElementById('f-name').value.trim(),
+            description: document.getElementById('f-description').value.trim(),
+            category: document.getElementById('f-category').value.trim(),
+            gradeFrom: document.getElementById('f-gradeFrom').value.trim(),
+            gradeTo: document.getElementById('f-gradeTo').value.trim(),
+            icon: document.getElementById('f-icon').value.trim(),
+            location: document.getElementById('f-location').value.trim(),
+            coordinates: {
+                lat: document.getElementById('f-lat').value ? parseFloat(document.getElementById('f-lat').value) : null,
+                lng: document.getElementById('f-lng').value ? parseFloat(document.getElementById('f-lng').value) : null
+            },
+            requirements: document.getElementById('f-requirements').value.trim(),
+            availability: document.getElementById('f-availability').value.trim(),
+            cost: document.getElementById('f-cost').value.trim(),
+            contact: document.getElementById('f-contact').value.trim()
+        };
+    }
+
+    function fillForm(entry) {
+        document.getElementById('f-id').value = entry.id || '';
+        document.getElementById('f-name').value = entry.name || '';
+        document.getElementById('f-description').value = entry.description || '';
+        document.getElementById('f-category').value = entry.category || '';
+        document.getElementById('f-gradeFrom').value = entry.gradeFrom || '';
+        document.getElementById('f-gradeTo').value = entry.gradeTo || '';
+        document.getElementById('f-icon').value = entry.icon || '';
+        document.getElementById('f-location').value = entry.location || '';
+        document.getElementById('f-requirements').value = entry.requirements || '';
+        document.getElementById('f-availability').value = entry.availability || '';
+        document.getElementById('f-cost').value = entry.cost || '';
+        document.getElementById('f-contact').value = entry.contact || '';
+        if (entry.coordinates && entry.coordinates.lat && entry.coordinates.lng) {
+            setMarker(entry.coordinates.lat, entry.coordinates.lng);
+            map.setView([entry.coordinates.lat, entry.coordinates.lng], 13);
+        }
+    }
+
+    function clearForm() {
+        document.getElementById('f-id').value = nextId();
+        document.getElementById('f-name').value = '';
+        document.getElementById('f-description').value = '';
+        document.getElementById('f-category').value = '';
+        document.getElementById('f-gradeFrom').value = '';
+        document.getElementById('f-gradeTo').value = '';
+        document.getElementById('f-icon').value = '';
+        document.getElementById('f-location').value = '';
+        document.getElementById('f-lat').value = '';
+        document.getElementById('f-lng').value = '';
+        document.getElementById('f-requirements').value = '';
+        document.getElementById('f-availability').value = '';
+        document.getElementById('f-cost').value = '';
+        document.getElementById('f-contact').value = '';
+        if (marker) { map.removeLayer(marker); marker = null; }
+        editIndex = null;
+    }
+
+    function addEntry() {
+        const entry = readForm();
+        if (!entry.name) {
+            alert('נא להזין לפחות שם למקום');
+            return;
+        }
+        if (editIndex !== null) {
+            places[editIndex] = entry;
+            editIndex = null;
+        } else {
+            places.push(entry);
+            counter++;
+        }
+        renderList();
+        clearForm();
+    }
+
+    function editEntry(index) {
+        editIndex = index;
+        fillForm(places[index]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteEntry(index) {
+        if (confirm('למחוק את "' + (places[index].name || 'הרשומה') + '"?')) {
+            places.splice(index, 1);
+            renderList();
+        }
+    }
+
+    function renderList() {
+        const list = document.getElementById('entryList');
+        document.getElementById('countLabel').textContent = places.length;
+
+        if (places.length === 0) {
+            list.innerHTML = '<p class="empty-note">עדיין לא נוספו מקומות</p>';
+        } else {
+            list.innerHTML = places.map((p, i) => `
+                <div class="entry-item">
+                    <div class="info">
+                        <b>${p.icon || '📍'} ${p.name}</b>
+                        ${p.category || ''}
+                    </div>
+                    <div class="actions">
+                        <button title="עריכה" onclick="editEntry(${i})">✏️</button>
+                        <button title="מחיקה" onclick="deleteEntry(${i})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('jsonPreview').value = JSON.stringify(places, null, 4);
+    }
+
+    function downloadJSON() {
+        const filename = document.getElementById('filename').value.trim() || 'places.json';
+        const blob = new Blob([JSON.stringify(places, null, 4)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function copyJSON() {
+        const text = JSON.stringify(places, null, 4);
+        navigator.clipboard.writeText(text).then(() => {
+            alert('הועתק ללוח! ✅');
+        }).catch(() => {
+            alert('לא ניתן היה להעתיק אוטומטית - סמנו והעתיקו ידנית מהתיבה.');
+        });
+    }
+
+    document.getElementById('loadFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const data = JSON.parse(evt.target.result);
+                if (Array.isArray(data)) {
+                    places = data;
+                    counter = places.length + 1;
+                    renderList();
+                    alert('הקובץ נטען בהצלחה! (' + places.length + ' רשומות)');
+                } else {
+                    alert('הקובץ חייב להכיל מערך (array) של רשומות.');
+                }
+            } catch (err) {
+                alert('שגיאה בקריאת הקובץ: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    renderList();
+</script>
+
+</body>
+</html>
