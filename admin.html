@@ -212,12 +212,16 @@
             <label for="f-location">מיקום (כתובת / אזור)</label>
             <input type="text" id="f-location" placeholder="לדוגמה: באר שבע, רחוב הרצל 5">
 
-            <label>קואורדינטות - לחצו על המפה כדי לבחור נקודה</label>
+            <label for="f-coordinates">קואורדינטות (הדביקו כפי שמופיע בגוגל מפות)</label>
+            <input type="text" id="f-coordinates" placeholder="לדוגמה: 31.2518, 34.7913">
+            <p class="hint">פותחים את המקום בגוגל מפות, מעתיקים את הקואורדינטות (Ctrl+C) ומדביקים כאן. אפשר גם ללחוץ על המפה למטה כדי למלא אוטומטית.</p>
             <div id="map"></div>
-            <div class="row2" style="margin-top:0.6rem;">
-                <input type="number" id="f-lat" step="0.000001" placeholder="Latitude">
-                <input type="number" id="f-lng" step="0.000001" placeholder="Longitude">
-            </div>
+
+            <label for="f-media">קישור למדיה (וידאו יוטיוב וכו', אופציונלי)</label>
+            <input type="text" id="f-media" placeholder="לדוגמה: https://www.youtube.com/watch?v=...">
+
+            <label for="f-externalLink">קישור לאתר חיצוני (אופציונלי)</label>
+            <input type="text" id="f-externalLink" placeholder="לדוגמה: https://example.com">
 
             <label for="f-requirements">מה נדרש כדי להצטרף</label>
             <textarea id="f-requirements" placeholder="לדוגמה: גיל מינימום, אישור הורים, ראיון קצר"></textarea>
@@ -277,27 +281,40 @@
 
     let marker = null;
 
+    // מציב סמן על המפה ומעדכן את שדה הטקסט של הקואורדינטות
     function setMarker(lat, lng) {
         if (marker) { map.removeLayer(marker); }
         marker = L.marker([lat, lng]).addTo(map);
-        document.getElementById('f-lat').value = lat.toFixed(6);
-        document.getElementById('f-lng').value = lng.toFixed(6);
+        document.getElementById('f-coordinates').value = lat.toFixed(6) + ', ' + lng.toFixed(6);
     }
 
+    // לחיצה על המפה ממלאת את השדה אוטומטית
     map.on('click', (e) => {
         setMarker(e.latlng.lat, e.latlng.lng);
     });
 
-    // עדכון ידני של lat/lng גם יזיז את הסמן
-    document.getElementById('f-lat').addEventListener('change', syncMarkerFromInputs);
-    document.getElementById('f-lng').addEventListener('change', syncMarkerFromInputs);
+    // הדבקה/הקלדה ידנית של קואורדינטות מזיזה את הסמן
+    document.getElementById('f-coordinates').addEventListener('change', syncMarkerFromInput);
 
-    function syncMarkerFromInputs() {
-        const lat = parseFloat(document.getElementById('f-lat').value);
-        const lng = parseFloat(document.getElementById('f-lng').value);
-        if (!isNaN(lat) && !isNaN(lng)) {
-            setMarker(lat, lng);
-            map.setView([lat, lng], map.getZoom());
+    // מפרש מחרוזת קואורדינטות בכל פורמט נפוץ מגוגל מפות, למשל:
+    // "31.2518, 34.7913" / "31.2518,34.7913" / "31.2518° N, 34.7913° E"
+    function parseCoordinates(str) {
+        if (!str) return null;
+        const cleaned = str.replace(/[°NnEe]/g, '').trim();
+        const parts = cleaned.split(',').map(p => parseFloat(p.trim()));
+        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+            return { lat: parts[0], lng: parts[1] };
+        }
+        return null;
+    }
+
+    function syncMarkerFromInput() {
+        const coords = parseCoordinates(document.getElementById('f-coordinates').value);
+        if (coords) {
+            setMarker(coords.lat, coords.lng);
+            map.setView([coords.lat, coords.lng], 13);
+        } else {
+            alert('לא הצלחתי לזהות קואורדינטות בפורמט הזה. נסו את הפורמט: 31.2518, 34.7913');
         }
     }
 
@@ -317,10 +334,9 @@
             gradeTo: document.getElementById('f-gradeTo').value.trim(),
             icon: document.getElementById('f-icon').value.trim(),
             location: document.getElementById('f-location').value.trim(),
-            coordinates: {
-                lat: document.getElementById('f-lat').value ? parseFloat(document.getElementById('f-lat').value) : null,
-                lng: document.getElementById('f-lng').value ? parseFloat(document.getElementById('f-lng').value) : null
-            },
+            coordinates: document.getElementById('f-coordinates').value.trim(),
+            media: document.getElementById('f-media').value.trim(),
+            externalLink: document.getElementById('f-externalLink').value.trim(),
             requirements: document.getElementById('f-requirements').value.trim(),
             availability: document.getElementById('f-availability').value.trim(),
             cost: document.getElementById('f-cost').value.trim(),
@@ -343,13 +359,17 @@
             document.getElementById('icon-preview-wrap').style.display = 'none';
         }
         document.getElementById('f-location').value = entry.location || '';
+        document.getElementById('f-coordinates').value = entry.coordinates || '';
+        document.getElementById('f-media').value = entry.media || '';
+        document.getElementById('f-externalLink').value = entry.externalLink || '';
         document.getElementById('f-requirements').value = entry.requirements || '';
         document.getElementById('f-availability').value = entry.availability || '';
         document.getElementById('f-cost').value = entry.cost || '';
         document.getElementById('f-contact').value = entry.contact || '';
-        if (entry.coordinates && entry.coordinates.lat && entry.coordinates.lng) {
-            setMarker(entry.coordinates.lat, entry.coordinates.lng);
-            map.setView([entry.coordinates.lat, entry.coordinates.lng], 13);
+        const coords = parseCoordinates(entry.coordinates);
+        if (coords) {
+            setMarker(coords.lat, coords.lng);
+            map.setView([coords.lat, coords.lng], 13);
         }
     }
 
@@ -364,8 +384,9 @@
         document.getElementById('f-icon-file').value = '';
         document.getElementById('icon-preview-wrap').style.display = 'none';
         document.getElementById('f-location').value = '';
-        document.getElementById('f-lat').value = '';
-        document.getElementById('f-lng').value = '';
+        document.getElementById('f-coordinates').value = '';
+        document.getElementById('f-media').value = '';
+        document.getElementById('f-externalLink').value = '';
         document.getElementById('f-requirements').value = '';
         document.getElementById('f-availability').value = '';
         document.getElementById('f-cost').value = '';
@@ -470,7 +491,7 @@
         reader.readAsText(file);
     });
 
-        document.getElementById('f-icon-file').addEventListener('change', (e) => {
+    document.getElementById('f-icon-file').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const url = URL.createObjectURL(file);
