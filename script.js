@@ -1,23 +1,9 @@
 // Ждем полной загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🌹 Сайт "Ган а-Варадим а-Леваним" успешно загружен!');
-
+    console.log('🌹 Сайт успешно загружен!');
     loadCategories();
     setupSearch();
 });
-
-/**
- * Плавная прокрутка к секции с местами
- */
-function scrollToPlaces() {
-    const placesSection = document.getElementById('places-section');
-    if (placesSection) {
-        placesSection.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
-}
 
 async function loadCategories() {
     const grid = document.getElementById('categories-grid');
@@ -26,24 +12,19 @@ async function loadCategories() {
     try {
         const response = await fetch('local.json');
         if (!response.ok) {
-            throw new Error(`שגיאת HTTP: ${response.status}`);
+            throw new Error(`HTTP: ${response.status}`);
         }
         const places = await response.json();
         renderCategories(places);
     } catch (error) {
-        console.error('שגיאה בטעינת המקומות:', error);
+        console.error('Ошибка загрузки:', error);
         grid.innerHTML = '<p class="empty-state">לא ניתן לטעון את המקומות כרגע. נסו לרענן את העמוד.</p>';
     }
 }
 
-/**
- * מרנדר כרטיסי מקומות לתוך ה-grid
- * @param {Array} places - מערך אובייקטים בפורמט { id, name, description, category, icon, ... }
- */
 function renderCategories(places) {
     const grid = document.getElementById('categories-grid');
     if (!grid) return;
-
     grid.innerHTML = '';
 
     if (!places || places.length === 0) {
@@ -51,27 +32,41 @@ function renderCategories(places) {
         return;
     }
 
-    places.forEach(place => {
+    places.forEach((place) => {
         const card = document.createElement('div');
         card.className = 'category-card';
-        card.dataset.name = place.name || '';
-        card.dataset.category = place.category || '';
+
+        // Проверяем, есть ли иконка, если нет — ставим эмодзи
+        const iconHtml = place.icon 
+            ? `<img src="${place.icon}" alt="${place.name}" class="card-icon-img" onerror="this.style.display='none'; this.parentElement.innerHTML='📍'">`
+            : '📍';
 
         card.innerHTML = `
-            <div class="card-icon">${place.icon || '📍'}</div>
-            <h3>${place.name || ''}</h3>
-            <p>${place.description || ''}</p>
-            ${place.category ? `<span class="category-tag">${place.category}</span>` : ''}
-            ${place.location ? `<div class="location-info">📍 ${place.location}</div>` : ''}
+            <div class="card-icon-wrapper">
+                ${iconHtml}
+            </div>
+            <div class="card-content">
+                <h3>${place.name || 'ללא שם'}</h3>
+                <p class="card-description">${place.description || ''}</p>
+                
+                <div class="card-meta">
+                    ${place.category ? `<span class="category-tag">🏷️ ${place.category}</span>` : ''}
+                    ${place.gradeFrom || place.gradeTo ? `<span class="grade-tag">📚 ${place.gradeFrom || ''}${place.gradeFrom && place.gradeTo ? '–' : ''}${place.gradeTo || ''}</span>` : ''}
+                </div>
+
+                ${place.location ? `<div class="location-info">📍 ${place.location}</div>` : ''}
+                
+                <div class="card-footer">
+                    ${place.cost ? `<span class="cost-info">💰 ${place.cost}</span>` : ''}
+                    ${place.externalLink ? `<a href="${place.externalLink}" target="_blank" class="card-link">🔗 למידע נוסף</a>` : ''}
+                </div>
+            </div>
         `;
 
         grid.appendChild(card);
     });
 }
 
-/**
- * מפעיל את שדה החיפוש בנאבבר - מסנן את כרטיסי המקומות לפי שם
- */
 function setupSearch() {
     const input = document.getElementById('search-input');
     if (!input) return;
@@ -92,10 +87,6 @@ function setupSearch() {
     });
 }
 
-/**
- * מציג/מסתיר הודעת "לא נמצאו תוצאות" בזמן חיפוש
- * @param {boolean} show
- */
 function toggleNoResultsMessage(show) {
     const grid = document.getElementById('categories-grid');
     if (!grid) return;
