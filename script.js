@@ -1,9 +1,10 @@
-// Ждем полной загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🌹 Сайт успешно загружен!');
     loadCategories();
     setupSearch();
 });
+
+let allPlaces = [];
 
 async function loadCategories() {
     const grid = document.getElementById('categories-grid');
@@ -14,8 +15,8 @@ async function loadCategories() {
         if (!response.ok) {
             throw new Error(`HTTP: ${response.status}`);
         }
-        const places = await response.json();
-        renderCategories(places);
+        allPlaces = await response.json();
+        renderCategories(allPlaces);
     } catch (error) {
         console.error('Ошибка загрузки:', error);
         grid.innerHTML = '<p class="empty-state">לא ניתן לטעון את המקומות כרגע. נסו לרענן את העמוד.</p>';
@@ -35,8 +36,15 @@ function renderCategories(places) {
     places.forEach((place) => {
         const card = document.createElement('div');
         card.className = 'category-card';
+        card.style.cursor = 'pointer';
 
-        // Проверяем, есть ли иконка, если нет — ставим эмодзи
+        // Переход на страницу деталей local.html при клике на карточку
+        card.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'A') {
+                window.location.href = `local.html?id=${encodeURIComponent(place.id)}`;
+            }
+        });
+
         const iconHtml = place.icon 
             ? `<img src="${place.icon}" alt="${place.name}" class="card-icon-img" onerror="this.style.display='none'; this.parentElement.innerHTML='📍'">`
             : '📍';
@@ -58,7 +66,7 @@ function renderCategories(places) {
                 
                 <div class="card-footer">
                     ${place.cost ? `<span class="cost-info">💰 ${place.cost}</span>` : ''}
-                    ${place.externalLink ? `<a href="${place.externalLink}" target="_blank" class="card-link">🔗 למידע נוסף</a>` : ''}
+                    <a href="local.html?id=${encodeURIComponent(place.id)}" class="card-link">לפרטים מלאים ⬅️</a>
                 </div>
             </div>
         `;
@@ -73,35 +81,13 @@ function setupSearch() {
 
     input.addEventListener('input', () => {
         const query = input.value.trim().toLowerCase();
-        const cards = document.querySelectorAll('#categories-grid .category-card');
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-            const name = (card.dataset.name || '').toLowerCase();
-            const isMatch = name.includes(query);
-            card.style.display = isMatch ? '' : 'none';
-            if (isMatch) visibleCount++;
+        const filtered = allPlaces.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            const cat = (p.category || '').toLowerCase();
+            const desc = (p.description || '').toLowerCase();
+            return name.includes(query) || cat.includes(query) || desc.includes(query);
         });
 
-        toggleNoResultsMessage(cards.length > 0 && visibleCount === 0);
+        renderCategories(filtered);
     });
-}
-
-function toggleNoResultsMessage(show) {
-    const grid = document.getElementById('categories-grid');
-    if (!grid) return;
-
-    let message = document.getElementById('no-results-message');
-
-    if (show) {
-        if (!message) {
-            message = document.createElement('p');
-            message.id = 'no-results-message';
-            message.className = 'empty-state';
-            message.textContent = 'לא נמצאו מקומות התואמים את החיפוש שלכם';
-            grid.appendChild(message);
-        }
-    } else if (message) {
-        message.remove();
-    }
 }
