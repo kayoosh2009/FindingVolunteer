@@ -336,6 +336,12 @@
         document.getElementById('f-gradeFrom').value = entry.gradeFrom || '';
         document.getElementById('f-gradeTo').value = entry.gradeTo || '';
         document.getElementById('f-icon').value = entry.icon || '';
+        if (entry.icon) {
+            document.getElementById('icon-preview').src = entry.icon;
+            document.getElementById('icon-preview-wrap').style.display = 'block';
+        } else {
+            document.getElementById('icon-preview-wrap').style.display = 'none';
+        }
         document.getElementById('f-location').value = entry.location || '';
         document.getElementById('f-requirements').value = entry.requirements || '';
         document.getElementById('f-availability').value = entry.availability || '';
@@ -470,7 +476,7 @@
         document.getElementById('icon-preview-wrap').style.display = 'block';
         document.getElementById('f-icon').value = 'icons/' + file.name;
     });
-    
+
     renderList();
 </script>
 
