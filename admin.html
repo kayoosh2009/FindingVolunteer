@@ -156,20 +156,21 @@
 <body>
 
     <h1>🛠️ עורך נתונים - בניית קובץ JSON</h1>
-    <p class="subtitle">כלי זמני לבנייה ידנית של רשימת מקומות ההתנדבות. לא חלק מהאתר עצמו - רק בשבילך.</p>
+    <p class="subtitle">כלי זמני לבנייה ידנית של רשימת מקומות ההתנדבות. הנתונים נשמרים אוטומטית בדפדפן (Local Storage).</p>
 
     <div class="top-actions">
         <label class="btn btn-secondary" style="margin:0; cursor:pointer;">
-            📂 טעינת קובץ JSON קיים
+            📂 טעינת / שילוב קובץ JSON
             <input type="file" id="loadFile" accept="application/json" style="display:none;">
         </label>
+        <button class="btn btn-danger" onclick="clearStorage()">🗑️ ניקוי כל הנתונים</button>
     </div>
 
     <div class="layout">
 
         <!-- טופס הזנה -->
         <div class="card">
-            <h2>הוספת מקום חדש</h2>
+            <h2>הוספת / עריכת מקום</h2>
 
             <label for="f-id">ID (מזהה ייחודי)</label>
             <input type="text" id="f-id">
@@ -188,7 +189,6 @@
                 <option value="איכות הסביבה">
                 <option value="קשישים ורווחה">
             </datalist>
-            <p class="hint">מומלץ להשתמש באותו שם קטגוריה כמו ב-data/local.json כדי שהסינון יעבוד.</p>
 
             <label>טווח כיתות</label>
             <div class="row2">
@@ -196,7 +196,7 @@
                 <input type="text" id="f-gradeTo" placeholder="עד כיתה (למשל יב')">
             </div>
 
-            <label for="f-icon">אייקון (נתיב לתמונה, למשל icons/dog.png)</label>
+            <label for="f-icon">אייקון (נתיב לתמונה)</label>
             <div style="display:flex; gap:0.6rem; align-items:center;">
                 <input type="text" id="f-icon" placeholder="icons/dog.png" style="flex:1;">
                 <label class="btn btn-secondary" style="margin:0; padding:0.5rem 0.9rem; white-space:nowrap; cursor:pointer;">
@@ -207,36 +207,34 @@
             <div id="icon-preview-wrap" style="margin-top:0.6rem; display:none;">
                 <img id="icon-preview" src="" alt="תצוגה מקדימה" style="height:48px; width:48px; object-fit:contain; border:1.5px solid var(--line); border-radius:8px; background:var(--white); padding:4px;">
             </div>
-            <p class="hint">בחירת קובץ כאן היא רק לתצוגה מקדימה ולמילוי אוטומטי של הנתיב. חובה להעתיק בעצמכם את קובץ התמונה לתיקיית <code>icons/</code> באתר - ה-JSON שומר רק את הנתיב, לא את התמונה עצמה.</p>
 
             <label for="f-location">מיקום (כתובת / אזור)</label>
             <input type="text" id="f-location" placeholder="לדוגמה: באר שבע, רחוב הרצל 5">
 
-            <label for="f-coordinates">קואורדינטות (הדביקו כפי שמופיע בגוגל מפות)</label>
+            <label for="f-coordinates">קואורדינטות</label>
             <input type="text" id="f-coordinates" placeholder="לדוגמה: 31.2518, 34.7913">
-            <p class="hint">פותחים את המקום בגוגל מפות, מעתיקים את הקואורדינטות (Ctrl+C) ומדביקים כאן. אפשר גם ללחוץ על המפה למטה כדי למלא אוטומטית.</p>
             <div id="map"></div>
 
-            <label for="f-media">קישור למדיה (וידאו יוטיוב וכו', אופציונלי)</label>
-            <input type="text" id="f-media" placeholder="לדוגמה: https://www.youtube.com/watch?v=...">
+            <label for="f-media">קישור למדיה (וידאו)</label>
+            <input type="text" id="f-media" placeholder="https://www.youtube.com/watch?v=...">
 
-            <label for="f-externalLink">קישור לאתר חיצוני (אופציונלי)</label>
-            <input type="text" id="f-externalLink" placeholder="לדוגמה: https://example.com">
+            <label for="f-externalLink">קישור לאתר חיצוני</label>
+            <input type="text" id="f-externalLink" placeholder="https://example.com">
 
             <label for="f-requirements">מה נדרש כדי להצטרף</label>
-            <textarea id="f-requirements" placeholder="לדוגמה: גיל מינימום, אישור הורים, ראיון קצר"></textarea>
+            <textarea id="f-requirements" placeholder="גיל מינימום, אישור הורים..."></textarea>
 
             <label for="f-availability">מתי אפשר להצטרף</label>
-            <input type="text" id="f-availability" placeholder="לדוגמה: כל השנה / רק בתחילת שנת הלימודים">
+            <input type="text" id="f-availability" placeholder="כל השנה / רק בתחילת שנה">
 
             <label for="f-cost">עלות</label>
-            <input type="text" id="f-cost" placeholder="לדוגמה: בחינם">
+            <input type="text" id="f-cost" placeholder="בחינם">
 
             <label for="f-contact">פרטי התקשרות</label>
             <textarea id="f-contact" placeholder="טלפון, מייל, איש קשר"></textarea>
 
             <div class="btn-row">
-                <button class="btn btn-primary" onclick="addEntry()">➕ הוספה לרשימה</button>
+                <button class="btn btn-primary" onclick="addEntry()">➕ שמירה / הוספה לרשימה</button>
                 <button class="btn btn-secondary" onclick="clearForm()">🧹 ניקוי הטופס</button>
             </div>
         </div>
@@ -268,12 +266,33 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+    const STORAGE_KEY = 'volunteer_places_data';
     let places = [];
     let editIndex = null;
     let counter = 1;
 
+    // --- טעינה ראשונית מ-LocalStorage ---
+    function loadFromStorage() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                places = JSON.parse(stored);
+                // עדכון ה-counter כדי שלא יהיו כפילויות מזהים
+                counter = places.length > 0 ? places.length + 1 : 1;
+            } catch (e) {
+                console.error("שגיאה בטעינת נתונים מ-LocalStorage", e);
+                places = [];
+            }
+        }
+    }
+
+    // --- שמירה ל-LocalStorage ---
+    function saveToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(places));
+    }
+
     // --- מפה ---
-    const map = L.map('map').setView([31.2518, 34.7913], 8); // מרכז ברירת מחדל: באר שבע
+    const map = L.map('map').setView([31.2518, 34.7913], 8);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
         maxZoom: 19
@@ -281,23 +300,18 @@
 
     let marker = null;
 
-    // מציב סמן על המפה ומעדכן את שדה הטקסט של הקואורדינטות
     function setMarker(lat, lng) {
         if (marker) { map.removeLayer(marker); }
         marker = L.marker([lat, lng]).addTo(map);
         document.getElementById('f-coordinates').value = lat.toFixed(6) + ', ' + lng.toFixed(6);
     }
 
-    // לחיצה על המפה ממלאת את השדה אוטומטית
     map.on('click', (e) => {
         setMarker(e.latlng.lat, e.latlng.lng);
     });
 
-    // הדבקה/הקלדה ידנית של קואורדינטות מזיזה את הסמן
     document.getElementById('f-coordinates').addEventListener('change', syncMarkerFromInput);
 
-    // מפרש מחרוזת קואורדינטות בכל פורמט נפוץ מגוגל מפות, למשל:
-    // "31.2518, 34.7913" / "31.2518,34.7913" / "31.2518° N, 34.7913° E"
     function parseCoordinates(str) {
         if (!str) return null;
         const cleaned = str.replace(/[°NnEe]/g, '').trim();
@@ -313,8 +327,6 @@
         if (coords) {
             setMarker(coords.lat, coords.lng);
             map.setView([coords.lat, coords.lng], 13);
-        } else {
-            alert('לא הצלחתי לזהות קואורדינטות בפורמט הזה. נסו את הפורמט: 31.2518, 34.7913');
         }
     }
 
@@ -322,11 +334,10 @@
     function nextId() {
         return 'place-' + counter;
     }
-    document.getElementById('f-id').value = nextId();
 
     function readForm() {
         return {
-            id: document.getElementById('f-id').value.trim(),
+            id: document.getElementById('f-id').value.trim() || nextId(),
             name: document.getElementById('f-name').value.trim(),
             description: document.getElementById('f-description').value.trim(),
             category: document.getElementById('f-category').value.trim(),
@@ -408,6 +419,7 @@
             places.push(entry);
             counter++;
         }
+        saveToStorage();
         renderList();
         clearForm();
     }
@@ -421,7 +433,18 @@
     function deleteEntry(index) {
         if (confirm('למחוק את "' + (places[index].name || 'הרשומה') + '"?')) {
             places.splice(index, 1);
+            saveToStorage();
             renderList();
+        }
+    }
+
+    function clearStorage() {
+        if (confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים השמורים בדפדפן?')) {
+            localStorage.removeItem(STORAGE_KEY);
+            places = [];
+            counter = 1;
+            renderList();
+            clearForm();
         }
     }
 
@@ -435,8 +458,8 @@
             list.innerHTML = places.map((p, i) => `
                 <div class="entry-item">
                     <div class="info">
-                        <b>${p.icon || '📍'} ${p.name}</b>
-                        ${p.category || ''}
+                        <b>${p.name}</b>
+                        <small>${p.category || 'ללא קטגוריה'} | ID: ${p.id}</small>
                     </div>
                     <div class="actions">
                         <button title="עריכה" onclick="editEntry(${i})">✏️</button>
@@ -465,28 +488,49 @@
         navigator.clipboard.writeText(text).then(() => {
             alert('הועתק ללוח! ✅');
         }).catch(() => {
-            alert('לא ניתן היה להעתיק אוטומטית - סמנו והעתיקו ידנית מהתיבה.');
+            alert('לא ניתן היה להעתיק אוטומטית.');
         });
     }
 
+    // --- טעינת/שילוב קובץ JSON ---
     document.getElementById('loadFile').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (evt) => {
             try {
-                const data = JSON.parse(evt.target.result);
-                if (Array.isArray(data)) {
-                    places = data;
+                const incomingData = JSON.parse(evt.target.result);
+                if (Array.isArray(incomingData)) {
+                    if (places.length > 0) {
+                        const replaceAll = confirm('האם להחליף את הרשימה הקיימת? (לחץ OK להחלפה, Cancel כדי למזג/להוסיף לקיימת)');
+                        if (replaceAll) {
+                            places = incomingData;
+                        } else {
+                            // מיזוג לפי ID (אם קיים - מעדכן, אם לא - מוסיף)
+                            incomingData.forEach(item => {
+                                const idx = places.findIndex(p => p.id === item.id);
+                                if (idx !== -1) {
+                                    places[idx] = item;
+                                } else {
+                                    places.push(item);
+                                }
+                            });
+                        }
+                    } else {
+                        places = incomingData;
+                    }
                     counter = places.length + 1;
+                    saveToStorage();
                     renderList();
-                    alert('הקובץ נטען בהצלחה! (' + places.length + ' רשומות)');
+                    alert('הקובץ נטען ונשמר בהצלחה! (' + places.length + ' רשומות בסך הכל)');
                 } else {
                     alert('הקובץ חייב להכיל מערך (array) של רשומות.');
                 }
             } catch (err) {
                 alert('שגיאה בקריאת הקובץ: ' + err.message);
             }
+            // איפוס ה-input כדי שאפשר יהיה לטעון את אותו קובץ שוב במידת הצורך
+            e.target.value = '';
         };
         reader.readAsText(file);
     });
@@ -500,7 +544,10 @@
         document.getElementById('f-icon').value = 'icons/' + file.name;
     });
 
+    // הרצה בטעינה ראשונית
+    loadFromStorage();
     renderList();
+    document.getElementById('f-id').value = nextId();
 </script>
 
 </body>
