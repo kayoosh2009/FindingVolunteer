@@ -549,3 +549,77 @@ body {
         align-items: flex-start;
     }
 }
+
+/* Иконки внутри тегов, локации и футера карточки */
+.tag-icon,
+.meta-icon,
+.card-link-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+.category-tag,
+.grade-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.category-tag {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.grade-tag {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.location-info {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    background: #F8FAFA;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    margin: 0.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cost-info {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.card-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.card-link-icon {
+    /* Поскольку это иконка "назад" (стрелка вправо/влево), подгоняем размер под текст */
+    width: 14px;
+    height: 14px;
+}
+
+.card-link:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
