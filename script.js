@@ -24,7 +24,7 @@ async function loadCategories() {
     if (!grid) return;
 
     try {
-        const response = await fetch('data/local.json');
+        const response = await fetch('local.json');
         if (!response.ok) {
             throw new Error(`שגיאת HTTP: ${response.status}`);
         }
