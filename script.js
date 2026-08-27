@@ -19,15 +19,12 @@ function scrollToPlaces() {
     }
 }
 
-/**
- * טוען את רשימת המקומות מתוך data/places.json ומרנדר אותן
- */
 async function loadCategories() {
     const grid = document.getElementById('categories-grid');
     if (!grid) return;
 
     try {
-        const response = await fetch('data/places.json');
+        const response = await fetch('data/local.json');
         if (!response.ok) {
             throw new Error(`שגיאת HTTP: ${response.status}`);
         }
