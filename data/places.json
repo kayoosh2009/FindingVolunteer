@@ -1,0 +1,19 @@
+[
+    {
+        "id": "1",
+        "name": "תוכנית ניצנים",
+        "description": "קורסים בתיכונים במחשבים בשיתוף בסמ\"ח — בית ספר למקצועות המחשב של צה\"ל, בהובלת עמותת נתיבי אודי.",
+        "category": "סייבר",
+        "gradeFrom": "ט׳",
+        "gradeTo": "י׳–י״ב",
+        "icon": "icons/nitzanim.png",
+        "location": "מיקום מקיף א׳, ג׳, ז׳, ו׳, דוד טוביהו, זילברמן, אמית",
+        "coordinates": "",
+        "media": "https://www.youtube.com/watch?v=ILbUzh8LwlU",
+        "externalLink": "https://nitzanim.udi.org.il/",
+        "requirements": "ג׳וניור — אוריינטציה טכנולוגית; בוגרים — 4/5 יח״ל מתמטיקה ו-5 יח״ל אנגלית",
+        "availability": "לפי מחזורי הרשמה",
+        "cost": "1,000 ש״ח חד־פעמי לשלוש השנים (אפשרות למלגה)",
+        "contact": "נבו מלול 0522030967 · מיכל 0547206389 · info@nitzanim.tech"
+    }
+]
